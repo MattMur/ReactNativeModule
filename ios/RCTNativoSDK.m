@@ -7,7 +7,7 @@
 //
 
 #import "RCTNativoSDK.h"
-#import "RCTNtvSectionDelegate.h"
+#import "NtvSharedSectionDelegate.h"
 #import <React/RCTLog.h>
 #import <NativoSDK/NativoSDK.h>
 
@@ -36,7 +36,7 @@ RCT_EXPORT_METHOD(enableTestAdvertisementsWithType:(nonnull NSNumber *)adType)
 
 RCT_EXPORT_METHOD(prefetchAdForSection:(NSString *)section atLocationIdentifier:(NSString *)identifier)
 {
-    [NativoSDK setSectionDelegate:[RCTNtvSectionDelegate sharedInstance] forSection:section];
+    [NativoSDK setSectionDelegate:[NtvSharedSectionDelegate sharedInstance] forSection:section];
     [NativoSDK prefetchAdForSection:section atLocationIdentifier:identifier options:nil];
 }
 

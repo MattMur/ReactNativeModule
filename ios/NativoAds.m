@@ -1,6 +1,6 @@
 #import "NativoAds.h"
 #import "NativoAdsUtils.h"
-#import "RCTNtvSectionDelegate.h"
+#import "NtvSharedSectionDelegate.h"
 #import <React/UIView+React.h>
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
@@ -53,13 +53,17 @@ RCT_EXPORT_VIEW_PROPERTY(videoTemplate, NSString)
 }
 
 - (void)didMoveToSuperview {
-    [NativoSDK setSectionDelegate:[RCTNtvSectionDelegate sharedInstance] forSection:self.sectionUrl];
-    NtvAdData *adData = [NativoSDK getCachedAdAtLocationIdentifier:self.locationId forSection:self.sectionUrl];
-    
-    if (adData) {
-        [self injectWithAdData:adData];
-    } else {
-        [NativoSDK prefetchAdForSection:self.sectionUrl atLocationIdentifier:self.locationId options:nil];
+    if (self.sectionUrl && self.locationId) {
+        // Set ad view with shared section delegate
+        [NtvSharedSectionDelegate setAdView:self forSectionUrl:self.sectionUrl atLocationIdentifier:self.locationId];
+        
+        // If we have ad data, inject ad view, otherwise prefetch ad
+        NtvAdData *adData = [NativoSDK getCachedAdAtLocationIdentifier:self.locationId forSection:self.sectionUrl];
+        if (adData) {
+            [self injectWithAdData:adData];
+        } else {
+            [NativoSDK prefetchAdForSection:self.sectionUrl atLocationIdentifier:self.locationId options:nil];
+        }
     }
 }
 

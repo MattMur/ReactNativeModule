@@ -6,21 +6,21 @@
 //  Copyright © 2019 Facebook. All rights reserved.
 //
 
-#import "RCTNtvSectionDelegate.h"
+#import "NtvSharedSectionDelegate.h"
 #import "NativoAds.h"
 #import <NativoSDK/NativoSDK.h>
 
-@interface RCTNtvSectionDelegate ()
+@interface NtvSharedSectionDelegate ()
 @property (nonatomic) NSMutableDictionary<NSString *, NSMutableDictionary<id, NativoAd*>*> *viewMap;
 @end
 
-@implementation RCTNtvSectionDelegate
+@implementation NtvSharedSectionDelegate
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
-    static RCTNtvSectionDelegate *sharedDelegate;
+    static NtvSharedSectionDelegate *sharedDelegate;
     dispatch_once(&once, ^{
-        sharedDelegate = [[RCTNtvSectionDelegate alloc] init];
+        sharedDelegate = [[NtvSharedSectionDelegate alloc] init];
         sharedDelegate.viewMap = [NSMutableDictionary dictionary];
     });
     return sharedDelegate;
@@ -28,7 +28,8 @@
 
 // Cache NativoAd for later when we have ad data
 + (void)setAdView:(NativoAd *)nativoAdView forSectionUrl:(NSString *)sectionUrl atLocationIdentifier:(id)locationId {
-    NSMutableDictionary *sectionMap = [RCTNtvSectionDelegate sharedInstance].viewMap;
+    [NativoSDK setSectionDelegate:[NtvSharedSectionDelegate sharedInstance] forSection:sectionUrl];
+    NSMutableDictionary *sectionMap = [NtvSharedSectionDelegate sharedInstance].viewMap;
     if (sectionUrl && locationId) {
         NSMutableDictionary *viewMap = sectionMap[sectionUrl];
         if (viewMap) {
@@ -54,7 +55,7 @@
 
 - (void)section:(NSString *)sectionUrl didReceiveAd:(NtvAdData *)adData {
     NSLog(@"%@ Did recieve Ad!", sectionUrl);
-    NSMutableDictionary *sectionMap = [RCTNtvSectionDelegate sharedInstance].viewMap;
+    NSMutableDictionary *sectionMap = [NtvSharedSectionDelegate sharedInstance].viewMap;
     NSDictionary *viewMap = sectionMap[sectionUrl];
     if (viewMap && adData) {
         NativoAd *adView = viewMap[adData.locationIdentifier];

@@ -7,12 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NativoAds.h"
 #import <NativoSDK/NativoSDK.h>
+#import "NativoAds.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTNtvSectionDelegate : NSObject <NtvSectionDelegate>
+@interface NtvSharedSectionDelegate : NSObject <NtvSectionDelegate>
 
 + (instancetype)sharedInstance;
 + (void)setAdView:(NativoAd *)nativoAdView forSectionUrl:(NSString *)sectionUrl atLocationIdentifier:(id)locationId;
