@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {requireNativeComponent, NativeModules } from 'react-native';
+import {requireNativeComponent, NativeModules, AppRegistry } from 'react-native';
+import App from '../../App';
 
 function NativoAdComponent(props) {
     const [sectionUrl, setSectionUrl] = React.useState("");
@@ -22,6 +23,11 @@ NativoAdComponent.propTypes = {
 };
 
 const NativoAd = requireNativeComponent('NativoAd', NativoAdComponent);
+
+// NativoSDK JS Methods
 const NativoSDK = NativeModules.NativoSDK;
+NativoSDK.registerTemplateComponent = (templateName, component) => {
+    AppRegistry.registerComponent(templateName, () => component);
+}
 
 export default NativoAdComponent;
