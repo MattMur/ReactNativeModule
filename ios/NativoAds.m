@@ -13,8 +13,8 @@
 RCT_EXPORT_MODULE(NativoAd)
 RCT_EXPORT_VIEW_PROPERTY(sectionUrl, NSString)
 RCT_EXPORT_VIEW_PROPERTY(locationId, NSString)
-RCT_EXPORT_VIEW_PROPERTY(nativeTemplate, NSString)
-RCT_EXPORT_VIEW_PROPERTY(videoTemplate, NSString)
+RCT_EXPORT_VIEW_PROPERTY(nativeAdTemplate, NSString)
+RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
 
 - (UIView *)view
 {
@@ -31,8 +31,8 @@ RCT_EXPORT_VIEW_PROPERTY(videoTemplate, NSString)
 @interface NativoAd () <RCTRootViewDelegate>
 @property (nonatomic) NSString *sectionUrl;
 @property (nonatomic) NSString *locationId;
-@property (nonatomic) NSString *nativeTemplate;
-@property (nonatomic) NSString *videoTemplate;
+@property (nonatomic) NSString *nativeAdTemplate;
+@property (nonatomic) NSString *videoAdTemplate;
 @end
 
 @implementation NativoAd
@@ -69,8 +69,7 @@ RCT_EXPORT_VIEW_PROPERTY(videoTemplate, NSString)
 
 - (void)injectWithAdData:(NtvAdData *)adData {
     // Get main thread
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
+    dispatch_async(dispatch_get_main_queue(), ^{
         NSDictionary *appProperties = @{ @"adTitle" : adData.title,
                                          @"adDescription" : adData.previewText,
                                          @"adAuthorName" : adData.authorName,
@@ -81,25 +80,25 @@ RCT_EXPORT_VIEW_PROPERTY(videoTemplate, NSString)
         RCTRootView *templateView;
         if (isNativeTemplate) {
             templateView = [[NativeAdTemplate alloc] initWithBridge:self.bridge
-                                                         moduleName:self.nativeTemplate
+                                                         moduleName:self.nativeAdTemplate
                                                   initialProperties:appProperties];
         } else if (isVideoTemplate) {
             templateView = [[VideoAdTemplate alloc] initWithBridge:self.bridge
-                                                         moduleName:self.videoTemplate
+                                                         moduleName:self.videoAdTemplate
                                                   initialProperties:appProperties];
         }
         
-        UIScrollView *container = [NativoAdsUtils getParentScrollViewForView:self];
-        if (container && templateView) {
-            [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
-                        
-            // Add click event for landing page
-            
-            // Inject template
-            templateView.delegate = self;
-            templateView.frame = self.bounds;
-            [self addSubview:templateView];
-        }
+        // Inject template
+        templateView.delegate = self;
+        templateView.frame = self.bounds;
+        [self addSubview:templateView];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            UIScrollView *container = [NativoAdsUtils getParentScrollViewForView:self];
+            if (container && templateView) {
+                [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
+            }
+        });
     });
 }
 

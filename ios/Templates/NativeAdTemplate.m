@@ -12,8 +12,8 @@
 @implementation NativeAdTemplate
 
 - (UIImageView *)adImageView {
-    UIView *adImageView = [self.bridge.uiManager viewForNativeID:@"adImageView" withRootTag:self.reactTag];
-    if ([adImageView isKindOfClass:[UIImageView class]]) {
+    UIView *adImageView = [self.bridge.uiManager viewForNativeID:@"articleImage" withRootTag:self.reactTag];
+    if (adImageView) {
         return (UIImageView *)adImageView;
     }
     return nil;
@@ -21,7 +21,7 @@
 
 - (UIImageView *)authorImageView {
     UIView *authorImageView = [self.bridge.uiManager viewForNativeID:@"authorImage" withRootTag:self.reactTag];
-    if ([authorImageView isKindOfClass:[UIImageView class]]) {
+    if (authorImageView) {
         return (UIImageView *)authorImageView;
     }
     return nil;

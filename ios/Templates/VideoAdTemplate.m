@@ -19,7 +19,7 @@
 
 - (UIImageView *)authorImageView {
     UIView *authorImageView = [self.bridge.uiManager viewForNativeID:@"authorImage" withRootTag:self.reactTag];
-    if ([authorImageView isKindOfClass:[UIImageView class]]) {
+    if (authorImageView) {
         return (UIImageView *)authorImageView;
     }
     return nil;

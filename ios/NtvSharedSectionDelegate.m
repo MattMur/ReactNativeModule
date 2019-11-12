@@ -59,7 +59,9 @@
     NSDictionary *viewMap = sectionMap[sectionUrl];
     if (viewMap && adData) {
         NativoAd *adView = viewMap[adData.locationIdentifier];
-        [adView injectWithAdData:adData];
+        if (adView) {
+            [adView injectWithAdData:adData];
+        }
     }
 }
 

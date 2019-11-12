@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {requireNativeComponent, NativeModules, AppRegistry } from 'react-native';
-import App from '../../App';
 
 function NativoAdComponent(props) {
     const [sectionUrl, setSectionUrl] = React.useState("");
