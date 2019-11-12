@@ -4,6 +4,7 @@
 #import <React/UIView+React.h>
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
+#import <React/RCTDevLoadingView.h>
 
 @interface NativoAdManager ()
 @end
@@ -15,6 +16,8 @@ RCT_EXPORT_VIEW_PROPERTY(sectionUrl, NSString)
 RCT_EXPORT_VIEW_PROPERTY(locationId, NSString)
 RCT_EXPORT_VIEW_PROPERTY(nativeAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
+RCT_EXPORT_VIEW_PROPERTY(onNativeAdClick, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
 
 - (UIView *)view
 {
@@ -23,12 +26,20 @@ RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
     return nativoAd;
 }
 
+- (void)setBridge:(RCTBridge *)bridge {
+#if RCT_DEV
+    [bridge moduleForClass:[RCTDevLoadingView class]];
+#endif
+    super.bridge = bridge;
+}
+
 @end
 
 
 # pragma mark - Nativo Ad
 
 @interface NativoAd () <RCTRootViewDelegate>
+@property (nonatomic) NtvAdData *adData;
 @property (nonatomic) NSString *sectionUrl;
 @property (nonatomic) NSString *locationId;
 @property (nonatomic) NSString *nativeAdTemplate;
@@ -68,6 +79,8 @@ RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
 }
 
 - (void)injectWithAdData:(NtvAdData *)adData {
+    self.adData = adData;
+    
     // Get main thread
     dispatch_async(dispatch_get_main_queue(), ^{
         NSDictionary *appProperties = @{ @"adTitle" : adData.title,
@@ -97,9 +110,41 @@ RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
             UIScrollView *container = [NativoAdsUtils getParentScrollViewForView:self];
             if (container && templateView) {
                 [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
+                
+                // Add click handler
+                UITapGestureRecognizer *clickEvent = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didClickAdUnit:)];
+                [self addGestureRecognizer:clickEvent];
             }
         });
     });
+}
+
+- (void)didClickAdUnit:(id)sel {
+    NSLog(@"did click ad unit!!!");
+    
+    NtvAdData *adData = self.adData;
+    switch (adData.adType) {
+        case Native:
+            if (!self.onNativeAdClick) {
+                return;
+            }
+            self.onNativeAdClick(@{ @"adTitle" : adData.title,
+                                    @"adDescription" : adData.previewText,
+                                    @"adAuthorName" : adData.authorName,
+                                    @"adDate" : adData.date,
+                                    @"url" : adData.sponsoredArticleURL.absoluteString });
+            break;
+            
+        case Display:
+            if (!self.onDisplayAdClick) {
+                return;
+            }
+            self.onDisplayAdClick(@{ @"url" : adData.sponsoredArticleURL.absoluteString });
+            break;
+            
+        default:
+            break;
+    }
 }
 
 #pragma mark - RCTRootViewDelegate

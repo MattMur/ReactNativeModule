@@ -10,6 +10,8 @@
 @interface NativoAd: UIView
 
 @property (nonatomic) RCTBridge *bridge;
+@property (nonatomic) RCTBubblingEventBlock onDisplayAdClick;
+@property (nonatomic) RCTBubblingEventBlock onNativeAdClick;
 - (void)injectWithAdData:(NtvAdData *)adData;
 
 @end

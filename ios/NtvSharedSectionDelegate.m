@@ -26,7 +26,18 @@
     return sharedDelegate;
 }
 
-// Cache NativoAd for later when we have ad data
+// Get NativoAd View
+- (NativoAd *)getViewForAdData:(NtvAdData *)adData inSection:(NSString *)sectionUrl {
+    NSMutableDictionary *sectionMap = [NtvSharedSectionDelegate sharedInstance].viewMap;
+    NSDictionary *viewMap = sectionMap[sectionUrl];
+    if (viewMap && adData) {
+        NativoAd *adView = viewMap[adData.locationIdentifier];
+        return adView;
+    }
+    return nil;
+}
+
+// Set NativoAd View
 + (void)setAdView:(NativoAd *)nativoAdView forSectionUrl:(NSString *)sectionUrl atLocationIdentifier:(id)locationId {
     [NativoSDK setSectionDelegate:[NtvSharedSectionDelegate sharedInstance] forSection:sectionUrl];
     NSMutableDictionary *sectionMap = [NtvSharedSectionDelegate sharedInstance].viewMap;
@@ -45,29 +56,27 @@
     NSLog(@"%@ %@", sectionUrl, reason);
 }
 
-- (void)section:(NSString *)sectionUrl needsDisplayLandingPage:(nullable UIViewController<NtvLandingPageInterface> *)sponsoredLandingPageViewController {
-    NSLog(@"%@ Attempting to display Nativo Landing Page", sectionUrl);
-}
+//- (void)section:(NSString *)sectionUrl needsDisplayLandingPage:(nullable UIViewController<NtvLandingPageInterface> *)sponsoredLandingPageViewController {
+//    NSLog(@"%@ Attempting to display Nativo Landing Page", sectionUrl);
+//}
 
-- (void)section:(NSString *)sectionUrl needsDisplayClickoutURL:(NSURL *)url {
-    NSLog(@"%@ Attempting to display Nativo Clickout URL: %@", sectionUrl, url);
-}
+//- (void)section:(NSString *)sectionUrl needsDisplayClickoutURL:(NSURL *)url {
+//    NSLog(@"%@ Attempting to display Nativo Clickout URL: %@", sectionUrl, url);
+//}
 
 - (void)section:(NSString *)sectionUrl didReceiveAd:(NtvAdData *)adData {
     NSLog(@"%@ Did recieve Ad!", sectionUrl);
-    NSMutableDictionary *sectionMap = [NtvSharedSectionDelegate sharedInstance].viewMap;
-    NSDictionary *viewMap = sectionMap[sectionUrl];
-    if (viewMap && adData) {
-        NativoAd *adView = viewMap[adData.locationIdentifier];
-        if (adView) {
-            [adView injectWithAdData:adData];
-        }
+    NativoAd *adView = [self getViewForAdData:adData inSection:sectionUrl];
+    if (adView) {
+        [adView injectWithAdData:adData];
     }
 }
 
 - (void)section:(NSString *)sectionUrl requestDidFailWithError:(nullable NSError *)error {
     NSLog(@"%@ Ad did fail with error: %@", sectionUrl, error);
 }
+
+
 
 /*
  + (void)initializeSDK {
