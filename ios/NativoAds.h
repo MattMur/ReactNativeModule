@@ -7,6 +7,6 @@
 
 @interface NativoAd: UIView
 
-@property (nonatomic) NSDictionary *parameters;
+@property (nonatomic) NtvAdData *adData;
 
 @end

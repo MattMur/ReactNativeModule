@@ -10,7 +10,6 @@
 RCT_EXPORT_MODULE(NativoAd)
 RCT_EXPORT_VIEW_PROPERTY(sectionUrl, NSString)
 RCT_EXPORT_VIEW_PROPERTY(locationId, NSString)
-//RCT_EXPORT_VIEW_PROPERTY(parameters, NSDictionary)
 
 - (UIView *)view
 {
@@ -27,8 +26,6 @@ RCT_EXPORT_VIEW_PROPERTY(locationId, NSString)
 @property (nonatomic) NSString *sectionUrl;
 @property (nonatomic) NSString *locationId;
 @property (nonatomic) NSDictionary *options;
-@property (nonatomic) UILabel *sectionUrlLabel;
-@property (nonatomic) UILabel *locationIdLabel;
 @end
 
 @implementation NativoAd
