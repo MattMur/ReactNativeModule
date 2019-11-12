@@ -7,6 +7,12 @@
 //
 
 #import "RCTNtvSectionDelegate.h"
+#import "NativoAds.h"
+#import <NativoSDK/NativoSDK.h>
+
+@interface RCTNtvSectionDelegate ()
+@property (nonatomic) NSMutableDictionary<NSString *, NSMutableDictionary<id, NativoAd*>*> *viewMap;
+@end
 
 @implementation RCTNtvSectionDelegate
 
@@ -15,18 +21,23 @@
     static RCTNtvSectionDelegate *sharedDelegate;
     dispatch_once(&once, ^{
         sharedDelegate = [[RCTNtvSectionDelegate alloc] init];
-        [RCTNtvSectionDelegate initializeSDK];
+        sharedDelegate.viewMap = [NSMutableDictionary dictionary];
     });
     return sharedDelegate;
 }
 
-+ (void)initializeSDK {
-    NSString *ntvBundlePath = [[NSBundle mainBundle] pathForResource:@"NativoAds" ofType:@"bundle"];
-    NSBundle *ntvBundle = [NSBundle bundleWithPath:ntvBundlePath];
-    NSError *error;
-    [ntvBundle loadAndReturnError:&error];
-    [NativoSDK registerNib:[UINib nibWithNibName:@"ArticleNativeAdView" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeNative];
-    [NativoSDK registerNib:[UINib nibWithNibName:@"ArticleVideoAdView" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeVideo];
+// Cache NativoAd for later when we have ad data
++ (void)setAdView:(NativoAd *)nativoAdView forSectionUrl:(NSString *)sectionUrl atLocationIdentifier:(id)locationId {
+    NSMutableDictionary *sectionMap = [RCTNtvSectionDelegate sharedInstance].viewMap;
+    if (sectionUrl && locationId) {
+        NSMutableDictionary *viewMap = sectionMap[sectionUrl];
+        if (viewMap) {
+            viewMap[locationId] = nativoAdView;
+        } else {
+            viewMap = [@{ locationId : nativoAdView } mutableCopy];
+            sectionMap[sectionUrl] = viewMap;
+        }
+    }
 }
 
 - (void)section:(NSString *)sectionUrl needsReloadDatasourceAtLocationIdentifier:(id)identifier forReason:(NSString *)reason {
@@ -43,10 +54,27 @@
 
 - (void)section:(NSString *)sectionUrl didReceiveAd:(NtvAdData *)adData {
     NSLog(@"%@ Did recieve Ad!", sectionUrl);
+    NSMutableDictionary *sectionMap = [RCTNtvSectionDelegate sharedInstance].viewMap;
+    NSDictionary *viewMap = sectionMap[sectionUrl];
+    if (viewMap && adData) {
+        NativoAd *adView = viewMap[adData.locationIdentifier];
+        [adView injectWithAdData:adData];
+    }
 }
 
 - (void)section:(NSString *)sectionUrl requestDidFailWithError:(nullable NSError *)error {
     NSLog(@"%@ Ad did fail with error: %@", sectionUrl, error);
 }
+
+/*
+ + (void)initializeSDK {
+     NSString *ntvBundlePath = [[NSBundle mainBundle] pathForResource:@"NativoAds" ofType:@"bundle"];
+     NSBundle *ntvBundle = [NSBundle bundleWithPath:ntvBundlePath];
+     NSError *error;
+     [ntvBundle loadAndReturnError:&error];
+     [NativoSDK registerNib:[UINib nibWithNibName:@"ArticleNativeAdView" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeNative];
+     [NativoSDK registerNib:[UINib nibWithNibName:@"ArticleVideoAdView" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeVideo];
+ }
+ */
 
 @end
