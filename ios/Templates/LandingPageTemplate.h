@@ -10,13 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^NtvEventHandleBlock)(NSString *eventName,  id _Nullable response);
+
 @interface LandingPageTemplate : UIViewController <NtvLandingPageInterface>
 
 @property (nonatomic) RCTRootView *rootView;
-@property (nonatomic, readonly) WKWebView *contentWKWebView;
-@property (nonatomic, readonly) UIImageView *authorImageView;
-@property (nonatomic, readonly) UIImageView *previewImageView;
-- (void)handleExternalLink:(nonnull NSURL *)link;
+@property (nonatomic) UIView *rootWebView;
+@property (nonatomic) WKWebView *webView;
+@property (nonatomic, copy) NtvEventHandleBlock handleEvent;
+@property (nonatomic) BOOL shouldScroll;
 
 @end
 

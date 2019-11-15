@@ -9,18 +9,21 @@
 #import "NativoAdsUtils.h"
 #import <React/UIView+React.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
 
 @implementation LandingPageTemplate
 
 - (WKWebView *)contentWKWebView {
-    if (self.rootView) {
-        UIView *webView = [self.rootView.bridge.uiManager viewForNativeID:@"" withRootTag:self.rootView.reactTag];
-        webView = [NativoAdsUtils findClass:[WKWebView class] inView:webView];
-        if (webView) {
-            return (WKWebView *)webView;
+    if (!_webView) {
+        if (self.rootView) {
+            self.rootWebView = [self.rootView.bridge.uiManager viewForNativeID:@"nativoAdWebView" withRootTag:self.rootView.reactTag];
+            self.webView = (WKWebView *)[NativoAdsUtils findClass:[WKWebView class] inView:self.rootWebView];
+            if (!self.webView) {
+                RCTLogError(@"Couldn't find WKWebView in root view with tag: %@ using nativeID: nativoAdWebView", self.rootView.reactTag);
+            }
         }
     }
-    return nil;
+    return self.webView;
 }
 
 - (UIImageView *)previewImageView {
@@ -43,8 +46,40 @@
     return nil;
 }
 
+- (BOOL)contentWebViewShouldScroll {
+    return self.shouldScroll;
+}
+
+- (void)setContentWebViewHeight:(CGFloat)contentHeight {
+    if (!self.shouldScroll) {
+        if (self.handleEvent) {
+            self.handleEvent(@"landingPageDidFinishLoading", @{ @"contentHeight" : @(contentHeight) } );
+        }
+    }
+}
+
 - (void)handleExternalLink:(nonnull NSURL *)link {
-    
+    if (self.handleEvent) {
+        self.handleEvent(@"landingPageHandleExternalLink", @{ @"url" : link.absoluteString });
+    }
+}
+
+- (void)contentWebViewDidFinishLoad {
+    if (self.shouldScroll) {
+        if (self.handleEvent) {
+            self.handleEvent(@"landingPageDidFinishLoading",
+                             @{ @"contentHeight" : @(self.rootWebView.frame.size.height) });
+        }
+    }
+}
+
+- (void)contentWebViewDidFailLoadWithError:(nullable NSError *)error {
+    if (self.handleEvent) {
+        NSDictionary *rctError = RCTMakeError(error.description, error, nil);
+        self.handleEvent(@"landingPageDidFinishLoading",
+                         @{ @"error" : rctError,
+                    @"contentHeight" : @(self.rootWebView.frame.size.height) });
+    }
 }
 
 @end

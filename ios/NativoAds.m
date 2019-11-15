@@ -109,6 +109,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             UIScrollView *container = [NativoAdsUtils getParentScrollViewForView:self];
             if (container && templateView) {
+                // Place ad in view
                 [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
                 
                 // Add click handler
@@ -128,11 +129,10 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
             if (!self.onNativeAdClick) {
                 return;
             }
-            self.onNativeAdClick(@{ @"adTitle" : adData.title,
-                                    @"adDescription" : adData.previewText,
-                                    @"adAuthorName" : adData.authorName,
-                                    @"adDate" : adData.date,
-                                    @"url" : adData.sponsoredArticleURL.absoluteString });
+            self.onNativeAdClick(@{ @"title" : adData.title,
+                                    @"description" : adData.previewText,
+                                    @"authorName" : adData.authorName,
+                                    @"date" : adData.date });
             break;
             
         case Display:
