@@ -12,6 +12,7 @@
 #import <React/RCTLog.h>
 #import <React/UIView+React.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 #import <React/RCTLog.h>
 #import <NativoSDK/NativoSDK.h>
 #import <objc/runtime.h>
@@ -42,24 +43,26 @@ RCT_EXPORT_METHOD(prefetchAdForSection:(NSString *)section atLocationIdentifier:
     [NativoSDK prefetchAdForSection:section atLocationIdentifier:identifier options:nil];
 }
 
-RCT_EXPORT_METHOD(injectLandingPage:(id)reactTag inSection:(NSString *)section atLocationIdentifier:(id)identifier  shouldScroll:(BOOL)shouldScroll)
+RCT_EXPORT_METHOD(loadSponsoredContent:(id)reactTag inSection:(NSString *)section atLocationIdentifier:(id)identifier  shouldScroll:(BOOL)shouldScroll)
 {
     if (self.bridge) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.bridge.uiManager rootViewForReactTag:reactTag withCompletion:^(UIView *rootView) {
-                if (rootView) {
+        
+        RCTExecuteOnUIManagerQueue(^{
+            [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+                UIView *rootWebView = viewRegistry[reactTag];
+                if (rootWebView) {
                     __weak RCTNativoSDK *weakSelf = self;
                     LandingPageTemplate *landingPageProxy = [[LandingPageTemplate alloc] init];
-                    landingPageProxy.rootView = (RCTRootView *)rootView;
+                    landingPageProxy.bridge = self.bridge;
+                    landingPageProxy.rootWebView = (RCTView *)rootWebView;
                     landingPageProxy.shouldScroll = shouldScroll;
                     landingPageProxy.handleEvent = ^(NSString * _Nonnull eventName, NSDictionary * _Nullable response) {
                         [weakSelf sendEventWithName:eventName body:response];
                     };
-                    NSString *locStr = [NSString stringWithFormat:@"%@", identifier];
-                    [NativoSDK injectSponsoredLandingPageViewController:landingPageProxy forSection:section withAdAtLocationIdentifier:locStr];
+                    [NativoSDK injectSponsoredLandingPageViewController:landingPageProxy forSection:section withAdAtLocationIdentifier:identifier];
                     
                     // Set associated object to link to root view's retain cycle
-                    objc_setAssociatedObject(rootView, @selector(contentWKWebView), landingPageProxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    objc_setAssociatedObject(rootWebView, @selector(contentWKWebView), landingPageProxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
                 }
             }];
         });

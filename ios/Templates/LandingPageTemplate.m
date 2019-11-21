@@ -15,36 +15,36 @@
 
 - (WKWebView *)contentWKWebView {
     if (!_webView) {
-        if (self.rootView) {
-            self.rootWebView = [self.rootView.bridge.uiManager viewForNativeID:@"nativoAdWebView" withRootTag:self.rootView.reactTag];
+        if (self.rootWebView) {
+            //self.rootWebView = [self.rootView.bridge.uiManager viewForNativeID:@"nativoAdWebView" withRootTag:self.rootView.reactTag];
             self.webView = (WKWebView *)[NativoAdsUtils findClass:[WKWebView class] inView:self.rootWebView];
             if (!self.webView) {
-                RCTLogError(@"Couldn't find WKWebView in root view with tag: %@ using nativeID: nativoAdWebView", self.rootView.reactTag);
+                RCTLogError(@"Couldn't find WKWebView in view retrieved from react tag.");
             }
         }
     }
     return self.webView;
 }
 
-- (UIImageView *)previewImageView {
-    if (self.rootView) {
-        UIView *previewImageView = [self.rootView.bridge.uiManager viewForNativeID:@"articleImage" withRootTag:self.rootView.reactTag];
-        if (previewImageView) {
-            return (UIImageView *)previewImageView;
-        }
-    }
-    return nil;
-}
-
-- (UIImageView *)authorImageView {
-    if (self.rootView) {
-        UIView *authorImageView = [self.rootView.bridge.uiManager viewForNativeID:@"authorImage" withRootTag:self.rootView.reactTag];
-        if (authorImageView) {
-            return (UIImageView *)authorImageView;
-        }
-    }
-    return nil;
-}
+//- (UIImageView *)previewImageView {
+//    if (self.rootWebView) {
+//        UIView *previewImageView = [self.bridge.uiManager viewForNativeID:@"articleImage" withRootTag:self.rootWebView.reactTag];
+//        if (previewImageView) {
+//            return (UIImageView *)previewImageView;
+//        }
+//    }
+//    return nil;
+//}
+//
+//- (UIImageView *)authorImageView {
+//    if (self.rootWebView) {
+//        UIView *authorImageView = [self.bridge.uiManager viewForNativeID:@"authorImage" withRootTag:self.rootWebView.reactTag];
+//        if (authorImageView) {
+//            return (UIImageView *)authorImageView;
+//        }
+//    }
+//    return nil;
+//}
 
 - (BOOL)contentWebViewShouldScroll {
     return self.shouldScroll;

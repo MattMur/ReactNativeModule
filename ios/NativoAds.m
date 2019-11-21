@@ -13,7 +13,7 @@
 
 RCT_EXPORT_MODULE(NativoAd)
 RCT_EXPORT_VIEW_PROPERTY(sectionUrl, NSString)
-RCT_EXPORT_VIEW_PROPERTY(locationId, NSString)
+RCT_EXPORT_VIEW_PROPERTY(locationId, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(nativeAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onNativeAdClick, RCTBubblingEventBlock)
@@ -41,7 +41,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
 @interface NativoAd () <RCTRootViewDelegate>
 @property (nonatomic) NtvAdData *adData;
 @property (nonatomic) NSString *sectionUrl;
-@property (nonatomic) NSString *locationId;
+@property (nonatomic) NSNumber *locationId;
 @property (nonatomic) NSString *nativeAdTemplate;
 @property (nonatomic) NSString *videoAdTemplate;
 @end
@@ -53,13 +53,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     return self;
 }
 
-- (void)setSectionUrl:(NSString *)sectionUrl {
-    NSLog(@"SectionUrl Set!!!");
-    _sectionUrl = sectionUrl;
-}
-
-- (void)setLocationId:(NSString *)locationId {
-    NSLog(@"LocationId Set!!!");
+- (void)setLocationId:(NSNumber *)locationId {
     _locationId = locationId;
 }
 
@@ -91,14 +85,16 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
         BOOL isNativeTemplate = adData.adType == Native || adData.adType == Display;
         BOOL isVideoTemplate = adData.adType == ScrollToPlayVideo || adData.adType == ClickToPlayVideo;
         RCTRootView *templateView;
-        if (isNativeTemplate) {
+        if (isNativeTemplate && self.nativeAdTemplate) {
             templateView = [[NativeAdTemplate alloc] initWithBridge:self.bridge
                                                          moduleName:self.nativeAdTemplate
                                                   initialProperties:appProperties];
-        } else if (isVideoTemplate) {
+        } else if (isVideoTemplate && self.videoAdTemplate) {
             templateView = [[VideoAdTemplate alloc] initWithBridge:self.bridge
                                                          moduleName:self.videoAdTemplate
                                                   initialProperties:appProperties];
+        } else {
+            return;
         }
         
         // Inject template
@@ -121,7 +117,6 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
 }
 
 - (void)didClickAdUnit:(id)sel {
-    NSLog(@"did click ad unit!!!");
     
     NtvAdData *adData = self.adData;
     switch (adData.adType) {
@@ -132,7 +127,11 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
             self.onNativeAdClick(@{ @"title" : adData.title,
                                     @"description" : adData.previewText,
                                     @"authorName" : adData.authorName,
-                                    @"date" : adData.date });
+                                    @"authorUrl" : adData.authorURL,
+                                    @"date" : adData.date,
+                                    @"locationId" : adData.locationIdentifier,
+                                    @"sectionUrl" : self.sectionUrl
+            });
             break;
             
         case Display:
