@@ -1,32 +1,43 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {requireNativeComponent, NativeModules, AppRegistry } from 'react-native';
+import {requireNativeComponent, AppRegistry } from 'react-native';
 
 function NativoAdComponent(props) {
-    const [sectionUrl, setSectionUrl] = React.useState("");
-    const [locationId, setLocationId] = React.useState("0");
-    const [nativeAdTemplate, setNativeAdTemplate] = React.useState("");
-    const [videoAdTemplate, setVideoAdTemplate] = React.useState("");
     console.log("Props "+JSON.stringify(props));
+    const [sectionUrl, setSectionUrl] = React.useState();
+    const [locationId, setLocationId] = React.useState("0");
+    const [onNativeAdClick, setOnNativeAdClick] = React.useState();
+    const [onDisplayAdClick, setOnDisplayAdClick] = React.useState();
+    const { nativeAdTemplate, videoAdTemplate, ...other } = props;
+    let nativeTemplateName;
+    let videoTemplateName;
+
+    const nativeKeys = Object.keys(nativeAdTemplate);
+    if (nativeKeys && nativeKeys.length > 0) {
+        nativeTemplateName = nativeKeys[0];
+        AppRegistry.registerComponent(nativeTemplateName, () => nativeAdTemplate[nativeTemplateName]);
+    }
+    const videoKeys = Object.keys(videoAdTemplate);
+    if (videoKeys && videoKeys.length > 0) {
+        videoTemplateName = videoKeys[0];
+        AppRegistry.registerComponent(videoTemplateName, () => videoAdTemplate[videoTemplateName]);
+    }
 
     return (
-        <NativoAd {...props} />
+        <NativoAd {...other} nativeAdTemplate={nativeTemplateName} videoAdTemplate={videoTemplateName} />
     );
 }
 
 NativoAdComponent.propTypes = {
     sectionUrl: PropTypes.string,
-    locationId: PropTypes.string,
-    nativeAdTemplate: PropTypes.string,
-    videoAdTemplate: PropTypes.string
+    locationId: PropTypes.number,
+    nativeAdTemplate: PropTypes.object,
+    videoAdTemplate: PropTypes.object,
+    onNativeAdClick: PropTypes.func,
+    onDisplayAdClick: PropTypes.func
 };
 
 const NativoAd = requireNativeComponent('NativoAd', NativoAdComponent);
 
-// NativoSDK JS Methods
-const NativoSDK = NativeModules.NativoSDK;
-NativoSDK.registerTemplateComponent = (templateName, component) => {
-    AppRegistry.registerComponent(templateName, () => component);
-}
 
 export default NativoAdComponent;
