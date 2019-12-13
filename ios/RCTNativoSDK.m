@@ -85,6 +85,9 @@ RCT_EXPORT_METHOD(loadSponsoredContent:(id)reactTag inSection:(NSString *)sectio
                                @"DISPLAY" : @(NtvTestAdTypeDisplay),
                                @"CLICK_VIDEO" : @(NtvTestAdTypeClickToPlayVideo),
                                @"SCROLL_VIDEO" : @(NtvTestAdTypeScrollToPlayVideo),
+                               @"STANDARD_DISPLAY" : @(NtvTestAdTypeStandardDisplay),
+                               @"DISPLAY_ADCHOICES" : @(NtvTestAdTypeAdChoicesDisplay),
+                               @"CLICK_VIDEO_ADCHOICES" : @(NtvTestAdTypeAdChoicesVideo),
                                @"NO_FILL" : @(NtvTestAdTypeNoFill) };
     return @{ @"AdTypes" : adTypes };
 };

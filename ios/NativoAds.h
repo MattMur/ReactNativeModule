@@ -1,7 +1,6 @@
 #import <React/RCTViewManager.h>
 #import <NativoSDK/NativoSDK.h>
-#import "NativeAdTemplate.h"
-#import "VideoAdTemplate.h"
+
 
 @interface NativoAdManager : RCTViewManager
 @end

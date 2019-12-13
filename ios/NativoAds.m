@@ -1,5 +1,8 @@
 #import "NativoAds.h"
 #import "NativoAdsUtils.h"
+#import "NativeAdTemplate.h"
+#import "VideoAdTemplate.h"
+#import "StandardDisplayAdTemplate.h"
 #import "NtvSharedSectionDelegate.h"
 #import <React/UIView+React.h>
 #import <React/RCTRootView.h>
@@ -16,8 +19,16 @@ RCT_EXPORT_VIEW_PROPERTY(sectionUrl, NSString)
 RCT_EXPORT_VIEW_PROPERTY(locationId, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(nativeAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
+RCT_EXPORT_VIEW_PROPERTY(stdDisplayAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onNativeAdClick, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
+
+- (instancetype)init {
+    self = [super init];
+    [NativoSDK registerClass:[NativeAdTemplate class] forAdTemplateType:NtvAdTemplateTypeNative];
+    [NativoSDK registerClass:[VideoAdTemplate class] forAdTemplateType:NtvAdTemplateTypeVideo];
+    return self;
+}
 
 - (UIView *)view
 {
@@ -33,6 +44,10 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     super.bridge = bridge;
 }
 
++ (BOOL)requiresMainQueueSetup {
+    return YES;
+}
+
 @end
 
 
@@ -44,6 +59,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
 @property (nonatomic) NSNumber *locationId;
 @property (nonatomic) NSString *nativeAdTemplate;
 @property (nonatomic) NSString *videoAdTemplate;
+@property (nonatomic) NSString *stdDisplayAdTemplate;
 @end
 
 @implementation NativoAd
@@ -84,6 +100,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
         
         BOOL isNativeTemplate = adData.adType == Native || adData.adType == Display;
         BOOL isVideoTemplate = adData.adType == ScrollToPlayVideo || adData.adType == ClickToPlayVideo;
+        BOOL isStdDisplayTemplate = adData.adType == StandardDisplay;
         RCTRootView *templateView;
         if (isNativeTemplate && self.nativeAdTemplate) {
             templateView = [[NativeAdTemplate alloc] initWithBridge:self.bridge
@@ -93,7 +110,12 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
             templateView = [[VideoAdTemplate alloc] initWithBridge:self.bridge
                                                          moduleName:self.videoAdTemplate
                                                   initialProperties:appProperties];
-        } else {
+        } else if (isStdDisplayTemplate && self.stdDisplayAdTemplate) {
+            templateView = [[StandardDisplayAdTemplate alloc] initWithBridge:self.bridge
+                                                                  moduleName:self.stdDisplayAdTemplate
+                                                           initialProperties:appProperties];
+        }
+        else {
             return;
         }
         
