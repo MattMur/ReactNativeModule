@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {requireNativeComponent, AppRegistry } from 'react-native';
+import { numericLiteral } from '@babel/types';
 
 function NativoAdComponent(props) {
     console.log("Props "+JSON.stringify(props));
@@ -8,24 +9,30 @@ function NativoAdComponent(props) {
     const [locationId, setLocationId] = React.useState("0");
     const [onNativeAdClick, setOnNativeAdClick] = React.useState();
     const [onDisplayAdClick, setOnDisplayAdClick] = React.useState();
-    const { nativeAdTemplate, videoAdTemplate, ...other } = props;
-    let nativeTemplateName;
-    let videoTemplateName;
-
-    const nativeKeys = Object.keys(nativeAdTemplate);
-    if (nativeKeys && nativeKeys.length > 0) {
-        nativeTemplateName = nativeKeys[0];
-        AppRegistry.registerComponent(nativeTemplateName, () => nativeAdTemplate[nativeTemplateName]);
+    const { nativeAdTemplate, videoAdTemplate, standardDisplayAdTemplate, ...other } = props;
+    
+    const allTemplates = {...nativeAdTemplate, ...videoAdTemplate, ...standardDisplayAdTemplate};
+    for (const templateName in allTemplates) {
+        AppRegistry.registerComponent(templateName, () => allTemplates[templateName]);
     }
-    const videoKeys = Object.keys(videoAdTemplate);
-    if (videoKeys && videoKeys.length > 0) {
-        videoTemplateName = videoKeys[0];
-        AppRegistry.registerComponent(videoTemplateName, () => videoAdTemplate[videoTemplateName]);
-    }
+    const nativeTemplateName = getFirstKey(nativeAdTemplate);
+    const videoTemplateName = getFirstKey(videoAdTemplate);
+    const stdDisplayTemplateName = getFirstKey(standardDisplayAdTemplate);
 
     return (
-        <NativoAd {...other} nativeAdTemplate={nativeTemplateName} videoAdTemplate={videoTemplateName} />
+        <NativoAd {...other} 
+            nativeAdTemplate={nativeTemplateName} 
+            videoAdTemplate={videoTemplateName} 
+            stdDisplayTemplate={stdDisplayTemplateName} />
     );
+}
+
+function getFirstKey(obj) {
+    const keys = Object.keys(obj);
+    if (keys && keys.length > 0) {
+        return keys[0];
+    }
+    return null;
 }
 
 NativoAdComponent.propTypes = {
@@ -33,6 +40,7 @@ NativoAdComponent.propTypes = {
     locationId: PropTypes.number,
     nativeAdTemplate: PropTypes.object,
     videoAdTemplate: PropTypes.object,
+    standardDisplayAdTemplate: PropTypes.object,
     onNativeAdClick: PropTypes.func,
     onDisplayAdClick: PropTypes.func
 };
