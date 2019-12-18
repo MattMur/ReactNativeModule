@@ -12,7 +12,7 @@
 #import <React/RCTView.h>
 #import <objc/runtime.h>
 
-#define CONTAINER_TAG @"nativoAdWebView"
+#define CONTAINER_TAG @"nativoDisplayContainer"
 
 @implementation StandardDisplayAdTemplate
 
@@ -20,7 +20,6 @@
     if (!_contentWebView) {
         RCTView *webContainer = (RCTView *)[self.bridge.uiManager viewForNativeID:CONTAINER_TAG withRootTag:self.reactTag];
         if (webContainer) {
-            webContainer.accessibilityLabel = @"Display Container";
             WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
             _contentWebView = [[NtvContentWebView alloc] initWithFrame:webContainer.bounds configuration:config];
             [webContainer addSubview:_contentWebView];
@@ -39,11 +38,6 @@
 
 - (void)didFinishNavigation:(null_unspecified WKNavigation *)navigation {
     NSLog(@"DidFinishNavigation");
-//    CGSize contentSize = _contentWebView.intrinsicContentSize;
-//    RCTView *webContainer = (RCTView *)[self.bridge.uiManager viewForNativeID:CONTAINER_TAG withRootTag:self.reactTag];
-//    if (webContainer) {
-//        [self.bridge.uiManager setSize:contentSize forView:webContainer];
-//    }
 }
 
 - (void)didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(nonnull NSError *)error {
