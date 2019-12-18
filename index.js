@@ -23,7 +23,7 @@ function NativoAdComponent(props) {
         <NativoAd {...other} 
             nativeAdTemplate={nativeTemplateName} 
             videoAdTemplate={videoTemplateName} 
-            stdDisplayTemplate={stdDisplayTemplateName} />
+            stdDisplayAdTemplate={stdDisplayTemplateName} />
     );
 }
 

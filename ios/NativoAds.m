@@ -27,6 +27,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     self = [super init];
     [NativoSDK registerClass:[NativeAdTemplate class] forAdTemplateType:NtvAdTemplateTypeNative];
     [NativoSDK registerClass:[VideoAdTemplate class] forAdTemplateType:NtvAdTemplateTypeVideo];
+    [NativoSDK registerClass:[StandardDisplayAdTemplate class] forAdTemplateType:NtvAdTemplateTypeStandardDisplay];
     return self;
 }
 
@@ -93,24 +94,29 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     
     // Get main thread
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSDictionary *appProperties = @{ @"adTitle" : adData.title,
-                                         @"adDescription" : adData.previewText,
-                                         @"adAuthorName" : adData.authorName,
-                                         @"adDate" : adData.date };
-        
         BOOL isNativeTemplate = adData.adType == Native || adData.adType == Display;
         BOOL isVideoTemplate = adData.adType == ScrollToPlayVideo || adData.adType == ClickToPlayVideo;
         BOOL isStdDisplayTemplate = adData.adType == StandardDisplay;
         RCTRootView *templateView;
         if (isNativeTemplate && self.nativeAdTemplate) {
+            NSDictionary *appProperties = @{@"adTitle" : adData.title,
+                                            @"adDescription" : adData.previewText,
+                                            @"adAuthorName" : adData.authorName,
+                                            @"adDate" : adData.date };
             templateView = [[NativeAdTemplate alloc] initWithBridge:self.bridge
                                                          moduleName:self.nativeAdTemplate
                                                   initialProperties:appProperties];
         } else if (isVideoTemplate && self.videoAdTemplate) {
+            NSDictionary *appProperties = @{@"adTitle" : adData.title,
+                                            @"adDescription" : adData.previewText,
+                                            @"adAuthorName" : adData.authorName,
+                                            @"adDate" : adData.date };
             templateView = [[VideoAdTemplate alloc] initWithBridge:self.bridge
                                                          moduleName:self.videoAdTemplate
                                                   initialProperties:appProperties];
         } else if (isStdDisplayTemplate && self.stdDisplayAdTemplate) {
+            NSDictionary *appProperties = @{@"displayHeight" : @(adData.standardDisplaySize.height),
+                                            @"displayWidth" : @(adData.standardDisplaySize.width)};
             templateView = [[StandardDisplayAdTemplate alloc] initWithBridge:self.bridge
                                                                   moduleName:self.stdDisplayAdTemplate
                                                            initialProperties:appProperties];
@@ -171,7 +177,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
 #pragma mark - RCTRootViewDelegate
 
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView {
-    
+    NSLog(@"Did rootViewDidChangeIntrinsicSize: %@", rootView);
 }
 
 @end
