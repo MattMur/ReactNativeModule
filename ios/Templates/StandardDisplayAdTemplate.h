@@ -6,6 +6,7 @@
 //
 
 #import "RCTRootView.h"
+#import <React/RCTView.h>
 #import <NativoSDK/NativoSDK.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface StandardDisplayAdTemplate : RCTRootView <NtvStandardDisplayAdInterface>
 
 @property (nonatomic) NtvContentWebView *contentWebView;
+@property (nonatomic) RCTBubblingEventBlock onFinishLoading;
 
 @end
 

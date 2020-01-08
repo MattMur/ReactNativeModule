@@ -15,11 +15,10 @@ typedef void (^NtvEventHandleBlock)(NSString *eventName,  id _Nullable response)
 
 @interface LandingPageTemplate : UIViewController <NtvLandingPageInterface>
 
-@property (nonatomic) RCTView *rootWebView;
-@property (nonatomic) RCTBridge *bridge;
 @property (nonatomic) WKWebView *webView;
-@property (nonatomic, copy) NtvEventHandleBlock handleEvent;
 @property (nonatomic) BOOL shouldScroll;
+@property (nonatomic) RCTBubblingEventBlock onFinishLoading;
+@property (nonatomic) RCTBubblingEventBlock onClickExternalLink;
 
 @end
 

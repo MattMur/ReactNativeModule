@@ -70,10 +70,6 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     return self;
 }
 
-- (void)setLocationId:(NSNumber *)locationId {
-    _locationId = locationId;
-}
-
 - (void)didMoveToSuperview {
     if (self.sectionUrl && self.locationId) {
         // Set ad view with shared section delegate
@@ -155,7 +151,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
             self.onNativeAdClick(@{ @"title" : adData.title,
                                     @"description" : adData.previewText,
                                     @"authorName" : adData.authorName,
-                                    @"authorUrl" : adData.authorURL,
+                                    @"authorImgUrl" : adData.authorImageURL,
                                     @"date" : adData.date,
                                     @"locationId" : adData.locationIdentifier,
                                     @"sectionUrl" : self.sectionUrl

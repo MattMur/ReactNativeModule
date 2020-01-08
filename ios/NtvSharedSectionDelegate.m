@@ -62,6 +62,11 @@
 
 //- (void)section:(NSString *)sectionUrl needsDisplayClickoutURL:(NSURL *)url {
 //    NSLog(@"%@ Attempting to display Nativo Clickout URL: %@", sectionUrl, url);
+//
+//    NativoAd *adView = [self getViewForAdData:adData inSection:sectionUrl];
+//    if (adView) {
+//        adView.onDisplayAdClick(@{ @"url" : url.absoluteString });
+//    }
 //}
 
 - (void)section:(NSString *)sectionUrl didReceiveAd:(NtvAdData *)adData {

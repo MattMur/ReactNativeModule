@@ -4,7 +4,7 @@ import {requireNativeComponent, AppRegistry } from 'react-native';
 import { numericLiteral } from '@babel/types';
 
 function NativoAdComponent(props) {
-    console.log("Props "+JSON.stringify(props));
+    //console.log("Props "+JSON.stringify(props));
     const [sectionUrl, setSectionUrl] = React.useState();
     const [locationId, setLocationId] = React.useState("0");
     const [onNativeAdClick, setOnNativeAdClick] = React.useState();
@@ -44,8 +44,38 @@ NativoAdComponent.propTypes = {
     onNativeAdClick: PropTypes.func,
     onDisplayAdClick: PropTypes.func
 };
-
 const NativoAd = requireNativeComponent('NativoAd', NativoAdComponent);
 
 
-export default NativoAdComponent;
+function NativoWebComponent(props) {
+    const [sectionUrl, setSectionUrl] = React.useState();
+    const [locationId, setLocationId] = React.useState("0");
+    const [shouldScroll, setShouldScroll] = React.useState(false);
+    // const [onFinishLoading, setOnFinishLoading] = React.useState();
+    // const [onClickExternalLink, setOnClickExternalLink] = React.useState();
+
+    _onClickExternalLink = (event) => {
+        if (!props.onClickExternalLink) {
+          return;
+        }
+        props.onClickExternalLink(event.nativeEvent);
+    }
+    _onFinishLoading = (event) => {
+        if (!props.onFinishLoading) {
+          return;
+        }
+        props.onFinishLoading(event.nativeEvent);
+    }
+    return (<NativoWebContent {...props} onClickExternalLink={this._onClickExternalLink} onFinishLoading={this._onFinishLoading} />);
+}
+
+NativoWebComponent.propTypes = {
+    sectionUrl: PropTypes.string,
+    locationId: PropTypes.number,
+    shouldScroll: PropTypes.bool,
+    onFinishLoading: PropTypes.func,
+    onClickExternalLink: PropTypes.func
+};
+const NativoWebContent = requireNativeComponent('NativoWebContent', NativoWebComponent);
+
+export { NativoAdComponent as NativoAd, NativoWebComponent as NativoWebContent };
