@@ -1,7 +1,7 @@
 
 #import <React/RCTViewManager.h>
 #import <NativoSDK/NativoSDK.h>
-#import "LandingPageTemplate.h"
+#import "NativoLandingPageTemplate.h"
 
 
 @interface NativoWebContentManager : RCTViewManager
@@ -9,7 +9,7 @@
 
 @interface NativoWebContentView : UIView
 @property (nonatomic) NtvContentWebView *nativoWebView;
-@property (nonatomic) LandingPageTemplate *templateProxy;
+@property (nonatomic) NativoLandingPageTemplate *templateProxy;
 @property (nonatomic) NSString *sectionUrl;
 @property (nonatomic) NSNumber *locationId;
 @property (nonatomic) BOOL *shouldScroll;

@@ -15,11 +15,7 @@ typedef void (^NtvEventHandleBlock)(NSString *eventName,  id _Nullable response)
 
 @interface LandingPageTemplate : UIViewController <NtvLandingPageInterface>
 
-@property (nonatomic) WKWebView *webView;
-@property (nonatomic) BOOL shouldScroll;
-@property (nonatomic) RCTBubblingEventBlock onFinishLoading;
-@property (nonatomic) RCTBubblingEventBlock onClickExternalLink;
-@property (nonatomic) NtvAdData *adData;
+
 
 @end
 

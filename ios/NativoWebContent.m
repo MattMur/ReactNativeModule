@@ -37,7 +37,7 @@ RCT_EXPORT_VIEW_PROPERTY(onClickExternalLink, RCTBubblingEventBlock)
     
     // This part used only for landing pages
     if (self.sectionUrl && self.locationId) {
-        self.templateProxy = [[LandingPageTemplate alloc] init];
+        self.templateProxy = [[NativoLandingPageTemplate alloc] init];
         self.templateProxy.webView = self.nativoWebView;
         self.templateProxy.shouldScroll = self.shouldScroll;
         self.templateProxy.onClickExternalLink = self.onClickExternalLink;

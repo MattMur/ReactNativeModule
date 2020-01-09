@@ -8,7 +8,7 @@
 
 #import "NtvSharedSectionDelegate.h"
 #import "NativoAds.h"
-#import "LandingPageTemplate.h"
+#import "NativoLandingPageTemplate.h"
 #import <NativoSDK/NativoSDK.h>
 
 @interface NtvSharedSectionDelegate ()
@@ -71,7 +71,7 @@
     
     NSLog(@"%@ Attempting to display Nativo Landing Page", sectionUrl);
     NativoAd *adView = [self getFirstViewInSection:sectionUrl];
-    LandingPageTemplate *template = (LandingPageTemplate *)sponsoredLandingPageViewController;
+    NativoLandingPageTemplate *template = (NativoLandingPageTemplate *)sponsoredLandingPageViewController;
     NtvAdData *adData = template.adData;
     if (adView && adView.onNativeAdClick) {
         adView.onNativeAdClick(@{ @"title" : adData.title,

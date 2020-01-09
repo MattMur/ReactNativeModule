@@ -4,7 +4,7 @@
 #import "VideoAdTemplate.h"
 #import "StandardDisplayAdTemplate.h"
 #import "NtvSharedSectionDelegate.h"
-#import "FakeLandingPage.h"
+#import "NativoLandingPageTemplate.h"
 #import <React/UIView+React.h>
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
@@ -31,8 +31,9 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     [NativoSDK registerClass:[NativeAdTemplate class] forAdTemplateType:NtvAdTemplateTypeNative];
     [NativoSDK registerClass:[VideoAdTemplate class] forAdTemplateType:NtvAdTemplateTypeVideo];
     [NativoSDK registerClass:[StandardDisplayAdTemplate class] forAdTemplateType:NtvAdTemplateTypeStandardDisplay];
-    NSBundle *moduleBundle = [NSBundle bundleForClass:[FakeLandingPage class]];
-    [NativoSDK registerNib:[UINib nibWithNibName:@"FakeLandingPage" bundle:moduleBundle] forAdTemplateType:NtvAdTemplateTypeLandingPage];
+    NSString *ntvBundlePath = [[NSBundle mainBundle] pathForResource:@"NativoResources" ofType:@"bundle"];
+    NSBundle *ntvBundle = [NSBundle bundleWithPath:ntvBundlePath];
+    [NativoSDK registerNib:[UINib nibWithNibName:@"NativoLandingPageTemplate" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeLandingPage];
     return self;
 }
 
@@ -128,7 +129,6 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
         }
         
         // Inject template
-        //templateView.passThroughTouches = YES;
         templateView.delegate = self;
         templateView.frame = self.bounds;
         [self addSubview:templateView];
@@ -138,43 +138,9 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
             if (container && templateView) {
                 // Place ad in view
                 [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
-                
-                // Add click handler
-//                UITapGestureRecognizer *clickEvent = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didClickAdUnit:)];
-//                [self addGestureRecognizer:clickEvent];
             }
         });
     });
-}
-
-- (void)didClickAdUnit:(id)sel {
-    
-    NtvAdData *adData = self.adData;
-    switch (adData.adType) {
-        case Native:
-            if (!self.onNativeAdClick) {
-                return;
-            }
-            self.onNativeAdClick(@{ @"title" : adData.title,
-                                    @"description" : adData.previewText,
-                                    @"authorName" : adData.authorName,
-                                    @"authorImgUrl" : adData.authorImageURL,
-                                    @"date" : adData.date,
-                                    @"locationId" : adData.locationIdentifier,
-                                    @"sectionUrl" : self.sectionUrl
-            });
-            break;
-            
-        case Display:
-            if (!self.onDisplayAdClick) {
-                return;
-            }
-            self.onDisplayAdClick(@{ @"url" : adData.sponsoredArticleURL.absoluteString });
-            break;
-            
-        default:
-            break;
-    }
 }
 
 #pragma mark - RCTRootViewDelegate
