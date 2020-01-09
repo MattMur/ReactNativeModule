@@ -4,10 +4,13 @@
 #import "VideoAdTemplate.h"
 #import "StandardDisplayAdTemplate.h"
 #import "NtvSharedSectionDelegate.h"
+#import "FakeLandingPage.h"
 #import <React/UIView+React.h>
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
 #import <React/RCTDevLoadingView.h>
+
+//@class FakeLandingPage;
 
 @interface NativoAdManager ()
 @end
@@ -28,6 +31,8 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     [NativoSDK registerClass:[NativeAdTemplate class] forAdTemplateType:NtvAdTemplateTypeNative];
     [NativoSDK registerClass:[VideoAdTemplate class] forAdTemplateType:NtvAdTemplateTypeVideo];
     [NativoSDK registerClass:[StandardDisplayAdTemplate class] forAdTemplateType:NtvAdTemplateTypeStandardDisplay];
+    NSBundle *moduleBundle = [NSBundle bundleForClass:[FakeLandingPage class]];
+    [NativoSDK registerNib:[UINib nibWithNibName:@"FakeLandingPage" bundle:moduleBundle] forAdTemplateType:NtvAdTemplateTypeLandingPage];
     return self;
 }
 
@@ -110,7 +115,8 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
             templateView = [[VideoAdTemplate alloc] initWithBridge:self.bridge
                                                          moduleName:self.videoAdTemplate
                                                   initialProperties:appProperties];
-        } else if (isStdDisplayTemplate && self.stdDisplayAdTemplate) {
+        }
+        else if (isStdDisplayTemplate && self.stdDisplayAdTemplate) {
             NSDictionary *appProperties = @{@"displayHeight" : @(adData.standardDisplaySize.height),
                                             @"displayWidth" : @(adData.standardDisplaySize.width)};
             templateView = [[StandardDisplayAdTemplate alloc] initWithBridge:self.bridge
@@ -122,6 +128,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
         }
         
         // Inject template
+        //templateView.passThroughTouches = YES;
         templateView.delegate = self;
         templateView.frame = self.bounds;
         [self addSubview:templateView];
@@ -133,8 +140,8 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
                 [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
                 
                 // Add click handler
-                UITapGestureRecognizer *clickEvent = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didClickAdUnit:)];
-                [self addGestureRecognizer:clickEvent];
+//                UITapGestureRecognizer *clickEvent = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didClickAdUnit:)];
+//                [self addGestureRecognizer:clickEvent];
             }
         });
     });

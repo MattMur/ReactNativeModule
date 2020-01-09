@@ -35,6 +35,10 @@
 //    return nil;
 //}
 
+- (void)didLoadContentWithAd:(nonnull NtvAdData *)adData {
+    self.adData = adData;
+}
+
 - (BOOL)contentWebViewShouldScroll {
     return self.shouldScroll;
 }

@@ -19,6 +19,7 @@ typedef void (^NtvEventHandleBlock)(NSString *eventName,  id _Nullable response)
 @property (nonatomic) BOOL shouldScroll;
 @property (nonatomic) RCTBubblingEventBlock onFinishLoading;
 @property (nonatomic) RCTBubblingEventBlock onClickExternalLink;
+@property (nonatomic) NtvAdData *adData;
 
 @end
 

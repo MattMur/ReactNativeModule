@@ -10,6 +10,19 @@ function NativoAdComponent(props) {
     const [onNativeAdClick, setOnNativeAdClick] = React.useState();
     const [onDisplayAdClick, setOnDisplayAdClick] = React.useState();
     const { nativeAdTemplate, videoAdTemplate, standardDisplayAdTemplate, ...other } = props;
+
+    _onNativeAdClick = (event) => {
+        if (!props.onNativeAdClick) {
+          return;
+        }
+        props.onNativeAdClick(event.nativeEvent);
+    }
+    _onDisplayAdClick = (event) => {
+        if (!props.onDisplayAdClick) {
+          return;
+        }
+        props.onDisplayAdClick(event.nativeEvent);
+    }
     
     const allTemplates = {...nativeAdTemplate, ...videoAdTemplate, ...standardDisplayAdTemplate};
     for (const templateName in allTemplates) {
@@ -21,6 +34,8 @@ function NativoAdComponent(props) {
 
     return (
         <NativoAd {...other} 
+            onNativeAdClick={_onNativeAdClick} 
+            onDisplayAdClick={_onDisplayAdClick} 
             nativeAdTemplate={nativeTemplateName} 
             videoAdTemplate={videoTemplateName} 
             stdDisplayAdTemplate={stdDisplayTemplateName} />
@@ -51,8 +66,6 @@ function NativoWebComponent(props) {
     const [sectionUrl, setSectionUrl] = React.useState();
     const [locationId, setLocationId] = React.useState("0");
     const [shouldScroll, setShouldScroll] = React.useState(false);
-    // const [onFinishLoading, setOnFinishLoading] = React.useState();
-    // const [onClickExternalLink, setOnClickExternalLink] = React.useState();
 
     _onClickExternalLink = (event) => {
         if (!props.onClickExternalLink) {

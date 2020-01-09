@@ -8,6 +8,7 @@
 
 #import "NtvSharedSectionDelegate.h"
 #import "NativoAds.h"
+#import "LandingPageTemplate.h"
 #import <NativoSDK/NativoSDK.h>
 
 @interface NtvSharedSectionDelegate ()
@@ -37,6 +38,16 @@
     return nil;
 }
 
+- (NativoAd *)getFirstViewInSection:(NSString *)sectionUrl {
+    NSMutableDictionary *sectionMap = [NtvSharedSectionDelegate sharedInstance].viewMap;
+    NSDictionary *viewMap = sectionMap[sectionUrl];
+    for (id key in viewMap) {
+        NativoAd *adView = viewMap[key];
+        return adView;
+    }
+    return nil;
+}
+
 // Set NativoAd View
 + (void)setAdView:(NativoAd *)nativoAdView forSectionUrl:(NSString *)sectionUrl atLocationIdentifier:(id)locationId {
     [NativoSDK setSectionDelegate:[NtvSharedSectionDelegate sharedInstance] forSection:sectionUrl];
@@ -56,18 +67,31 @@
     NSLog(@"%@ %@", sectionUrl, reason);
 }
 
-//- (void)section:(NSString *)sectionUrl needsDisplayLandingPage:(nullable UIViewController<NtvLandingPageInterface> *)sponsoredLandingPageViewController {
-//    NSLog(@"%@ Attempting to display Nativo Landing Page", sectionUrl);
-//}
+- (void)section:(NSString *)sectionUrl needsDisplayLandingPage:(nullable UIViewController<NtvLandingPageInterface> *)sponsoredLandingPageViewController {
+    
+    NSLog(@"%@ Attempting to display Nativo Landing Page", sectionUrl);
+    NativoAd *adView = [self getFirstViewInSection:sectionUrl];
+    LandingPageTemplate *template = (LandingPageTemplate *)sponsoredLandingPageViewController;
+    NtvAdData *adData = template.adData;
+    if (adView && adView.onNativeAdClick) {
+        adView.onNativeAdClick(@{ @"title" : adData.title,
+                                @"description" : adData.previewText,
+                                @"authorName" : adData.authorName,
+                                @"authorImgUrl" : adData.authorImageURL,
+                                @"date" : adData.date,
+                                @"locationId" : adData.locationIdentifier,
+                                @"sectionUrl" : sectionUrl
+        });
+    }
+}
 
-//- (void)section:(NSString *)sectionUrl needsDisplayClickoutURL:(NSURL *)url {
-//    NSLog(@"%@ Attempting to display Nativo Clickout URL: %@", sectionUrl, url);
-//
-//    NativoAd *adView = [self getViewForAdData:adData inSection:sectionUrl];
-//    if (adView) {
-//        adView.onDisplayAdClick(@{ @"url" : url.absoluteString });
-//    }
-//}
+- (void)section:(NSString *)sectionUrl needsDisplayClickoutURL:(NSURL *)url {
+    NSLog(@"%@ Attempting to display Nativo Clickout URL: %@", sectionUrl, url);
+    NativoAd *adView = [self getFirstViewInSection:sectionUrl];
+    if (adView && adView.onDisplayAdClick) {
+        adView.onDisplayAdClick(@{ @"url" : url.absoluteString });
+    }
+}
 
 - (void)section:(NSString *)sectionUrl didReceiveAd:(NtvAdData *)adData {
     NSLog(@"%@ Did recieve Ad!", sectionUrl);
