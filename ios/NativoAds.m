@@ -31,9 +31,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     [NativoSDK registerClass:[NativeAdTemplate class] forAdTemplateType:NtvAdTemplateTypeNative];
     [NativoSDK registerClass:[VideoAdTemplate class] forAdTemplateType:NtvAdTemplateTypeVideo];
     [NativoSDK registerClass:[StandardDisplayAdTemplate class] forAdTemplateType:NtvAdTemplateTypeStandardDisplay];
-    NSString *ntvBundlePath = [[NSBundle mainBundle] pathForResource:@"NativoResources" ofType:@"bundle"];
-    NSBundle *ntvBundle = [NSBundle bundleWithPath:ntvBundlePath];
-    [NativoSDK registerNib:[UINib nibWithNibName:@"NativoLandingPageTemplate" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeLandingPage];
+    [NativoSDK registerClass:[NativoLandingPageTemplate class] forAdTemplateType:NtvAdTemplateTypeLandingPage];
     return self;
 }
 

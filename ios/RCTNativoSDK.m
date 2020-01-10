@@ -42,32 +42,6 @@ RCT_EXPORT_METHOD(prefetchAdForSection:(NSString *)section atLocationIdentifier:
     [NativoSDK prefetchAdForSection:section atLocationIdentifier:identifier options:nil];
 }
 
-RCT_EXPORT_METHOD(loadSponsoredContent:(id)reactTag inSection:(NSString *)section atLocationIdentifier:(id)identifier  shouldScroll:(BOOL)shouldScroll)
-{
-//    if (self.bridge) {
-//        
-//        RCTExecuteOnUIManagerQueue(^{
-//            [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-//                UIView *rootWebView = viewRegistry[reactTag];
-//                if (rootWebView) {
-//                    __weak RCTNativoSDK *weakSelf = self;
-//                    LandingPageTemplate *landingPageProxy = [[LandingPageTemplate alloc] init];
-//                    landingPageProxy.bridge = self.bridge;
-//                    landingPageProxy.rootWebView = (RCTView *)rootWebView;
-//                    landingPageProxy.shouldScroll = shouldScroll;
-//                    landingPageProxy.handleEvent = ^(NSString * _Nonnull eventName, NSDictionary * _Nullable response) {
-//                        [weakSelf sendEventWithName:eventName body:response];
-//                    };
-//                    [NativoSDK injectSponsoredLandingPageViewController:landingPageProxy forSection:section withAdAtLocationIdentifier:identifier];
-//                    
-//                    // Set associated object to link to root view's retain cycle
-//                    objc_setAssociatedObject(rootWebView, @selector(contentWKWebView), landingPageProxy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-//                }
-//            }];
-//        });
-//    }
-}
-
 + (BOOL)requiresMainQueueSetup
 {
     return YES;

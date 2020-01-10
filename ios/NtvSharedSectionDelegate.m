@@ -105,17 +105,4 @@
     NSLog(@"%@ Ad did fail with error: %@", sectionUrl, error);
 }
 
-
-
-/*
- + (void)initializeSDK {
-     NSString *ntvBundlePath = [[NSBundle mainBundle] pathForResource:@"NativoAds" ofType:@"bundle"];
-     NSBundle *ntvBundle = [NSBundle bundleWithPath:ntvBundlePath];
-     NSError *error;
-     [ntvBundle loadAndReturnError:&error];
-     [NativoSDK registerNib:[UINib nibWithNibName:@"ArticleNativeAdView" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeNative];
-     [NativoSDK registerNib:[UINib nibWithNibName:@"ArticleVideoAdView" bundle:ntvBundle] forAdTemplateType:NtvAdTemplateTypeVideo];
- }
- */
-
 @end

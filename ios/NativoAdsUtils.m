@@ -10,43 +10,6 @@
 
 @implementation NativoAdsUtils
 
-+ (NSString *)getBundleId {
-    return [[NSBundle mainBundle] bundleIdentifier];
-
-}
-
-+ (NSString *)getAppVersion {
-    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-}
-
-+(void)saveToUserDefaults:(NSObject*)myObject key:(NSString*)myKey{
-    NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
-    
-    if (standardUserDefaults) {
-        [standardUserDefaults setObject:myObject forKey:myKey];
-    }
-}
-
-+(NSObject*)retrieveFromUserDefaults:(NSString*)myKey {
-    NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
-    NSObject *val = nil;
-    
-    if (standardUserDefaults){
-        val = [standardUserDefaults objectForKey:myKey];
-    }
-    
-    return val;
-}
-
-+(void)removeFromUserDefaults:(NSString*)myKey {
-    NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
-    
-    if (standardUserDefaults) {
-        [standardUserDefaults removeObjectForKey:myKey];
-    }
-}
-
-
 + (UIScrollView *)getParentScrollViewForView:(UIView *)view
 {
     // Iterate through superviews until we find an active scrollview or the outermost container
@@ -92,28 +55,6 @@
         nextView = nextView.superview;
     }
     return nextView == parentView;
-}
-
-
-+ (BOOL)frameIsMinimumViewable:(CGRect)frame inContainer:(CGRect)container minPercentViewable:(float)minViewable {
-    float area = frame.size.height * frame.size.width;
-    float minimumArea = area * minViewable;
-    CGRect visibleRect = CGRectIntersection(frame, container);
-    CGFloat visibleArea = visibleRect.size.height * visibleRect.size.width;
-    return visibleArea > minimumArea;
-}
-
-// Also remove cell from superview
-+ (UIView *)getContentViewForCell:(UIView *)cell {
-    if ([cell isKindOfClass:[UITableViewCell class]]) {
-        //[cell removeFromSuperview];
-        return ((UITableViewCell *)cell).contentView;
-    } else if ([cell isKindOfClass:[UICollectionViewCell class]]) {
-        //[cell removeFromSuperview];
-        return ((UICollectionViewCell *)cell).contentView;
-    } else {
-        return cell;
-    }
 }
 
 @end

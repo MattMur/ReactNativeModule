@@ -27,8 +27,8 @@ RCT_EXPORT_VIEW_PROPERTY(onClickExternalLink, RCTBubblingEventBlock)
     
     if (!self.nativoWebView) {
         self.nativoWebView = [[NtvContentWebView alloc] initWithFrame:self.bounds configuration:[[WKWebViewConfiguration alloc] init]];
-        //self.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.nativoWebView];
+        self.nativoWebView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.nativoWebView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
         [self.nativoWebView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
         [self.nativoWebView.leftAnchor constraintEqualToAnchor:self.leftAnchor].active = YES;
