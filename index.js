@@ -4,24 +4,28 @@ import {requireNativeComponent, AppRegistry } from 'react-native';
 import { numericLiteral } from '@babel/types';
 
 function NativoAdComponent(props) {
-    //console.log("Props "+JSON.stringify(props));
-    const [sectionUrl, setSectionUrl] = React.useState();
-    const [locationId, setLocationId] = React.useState("0");
-    const [onNativeAdClick, setOnNativeAdClick] = React.useState();
-    const [onDisplayAdClick, setOnDisplayAdClick] = React.useState();
     const { nativeAdTemplate, videoAdTemplate, standardDisplayAdTemplate, ...other } = props;
 
     _onNativeAdClick = (event) => {
         if (!props.onNativeAdClick) {
-          return;
+            console.log("Nativo ad at index "+ props.locationId +" was clicked but 'onNativeAdClick' not implemented");
+            return;
         }
         props.onNativeAdClick(event.nativeEvent);
     }
     _onDisplayAdClick = (event) => {
         if (!props.onDisplayAdClick) {
-          return;
+            console.log("Nativo ad at index "+ props.locationId +" was clicked but 'onDisplayAdClick' not implemented");
+            return;
         }
         props.onDisplayAdClick(event.nativeEvent);
+    }
+    _onNeedsRemoveAd = (event) => {
+        if (!props.onNeedsRemoveAd) {
+            console.log("Nativo ad at index "+ props.locationId +" should be removed but 'onNeedsRemoveAd' not implemented");
+            return;
+        }
+        props.onNeedsRemoveAd(event.nativeEvent);
     }
     
     const allTemplates = {...nativeAdTemplate, ...videoAdTemplate, ...standardDisplayAdTemplate};
@@ -36,6 +40,7 @@ function NativoAdComponent(props) {
         <NativoAd {...other} 
             onNativeAdClick={_onNativeAdClick} 
             onDisplayAdClick={_onDisplayAdClick} 
+            onNeedsRemoveAd={_onNeedsRemoveAd} 
             nativeAdTemplate={nativeTemplateName} 
             videoAdTemplate={videoTemplateName} 
             stdDisplayAdTemplate={stdDisplayTemplateName} />
@@ -57,7 +62,8 @@ NativoAdComponent.propTypes = {
     videoAdTemplate: PropTypes.object,
     standardDisplayAdTemplate: PropTypes.object,
     onNativeAdClick: PropTypes.func,
-    onDisplayAdClick: PropTypes.func
+    onDisplayAdClick: PropTypes.func,
+    onNeedsRemoveAd: PropTypes.func
 };
 const NativoAd = requireNativeComponent('NativoAd', NativoAdComponent);
 

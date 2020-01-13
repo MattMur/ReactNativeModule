@@ -25,6 +25,8 @@ RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(stdDisplayAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onNativeAdClick, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onNeedsRemoveAd, RCTBubblingEventBlock)
+
 
 - (instancetype)init {
     self = [super init];
@@ -94,48 +96,61 @@ RCT_EXPORT_VIEW_PROPERTY(onDisplayAdClick, RCTBubblingEventBlock)
     
     // Get main thread
     dispatch_async(dispatch_get_main_queue(), ^{
-        BOOL isNativeTemplate = adData.adType == Native || adData.adType == Display;
-        BOOL isVideoTemplate = adData.adType == ScrollToPlayVideo || adData.adType == ClickToPlayVideo;
-        BOOL isStdDisplayTemplate = adData.adType == StandardDisplay;
-        RCTRootView *templateView;
-        if (isNativeTemplate && self.nativeAdTemplate) {
-            NSDictionary *appProperties = @{@"adTitle" : adData.title,
-                                            @"adDescription" : adData.previewText,
-                                            @"adAuthorName" : adData.authorName,
-                                            @"adDate" : adData.date };
-            templateView = [[NativeAdTemplate alloc] initWithBridge:self.bridge
-                                                         moduleName:self.nativeAdTemplate
-                                                  initialProperties:appProperties];
-        } else if (isVideoTemplate && self.videoAdTemplate) {
-            NSDictionary *appProperties = @{@"adTitle" : adData.title,
-                                            @"adDescription" : adData.previewText,
-                                            @"adAuthorName" : adData.authorName,
-                                            @"adDate" : adData.date };
-            templateView = [[VideoAdTemplate alloc] initWithBridge:self.bridge
-                                                         moduleName:self.videoAdTemplate
-                                                  initialProperties:appProperties];
-        }
-        else if (isStdDisplayTemplate && self.stdDisplayAdTemplate) {
-            NSDictionary *appProperties = @{@"displayHeight" : @(adData.standardDisplaySize.height),
-                                            @"displayWidth" : @(adData.standardDisplaySize.width)};
-            templateView = [[StandardDisplayAdTemplate alloc] initWithBridge:self.bridge
-                                                                  moduleName:self.stdDisplayAdTemplate
-                                                           initialProperties:appProperties];
-        }
-        else {
-            return;
-        }
         
-        // Inject template
-        templateView.delegate = self;
-        templateView.frame = self.bounds;
-        [self addSubview:templateView];
+        UIView *templateView;
+        if (adData.isAdContentAvailable) {
+            BOOL isNativeTemplate = adData.adType == Native || adData.adType == Display;
+            BOOL isVideoTemplate = adData.adType == ScrollToPlayVideo || adData.adType == ClickToPlayVideo;
+            BOOL isStdDisplayTemplate = adData.adType == StandardDisplay;
+            if (isNativeTemplate && self.nativeAdTemplate) {
+                NSDictionary *appProperties = @{@"adTitle" : adData.title,
+                                                @"adDescription" : adData.previewText,
+                                                @"adAuthorName" : adData.authorName,
+                                                @"adDate" : adData.date };
+                templateView = [[NativeAdTemplate alloc] initWithBridge:self.bridge
+                                                             moduleName:self.nativeAdTemplate
+                                                      initialProperties:appProperties];
+            } else if (isVideoTemplate && self.videoAdTemplate) {
+                NSDictionary *appProperties = @{@"adTitle" : adData.title,
+                                                @"adDescription" : adData.previewText,
+                                                @"adAuthorName" : adData.authorName,
+                                                @"adDate" : adData.date };
+                templateView = [[VideoAdTemplate alloc] initWithBridge:self.bridge
+                                                             moduleName:self.videoAdTemplate
+                                                      initialProperties:appProperties];
+            }
+            else if (isStdDisplayTemplate && self.stdDisplayAdTemplate) {
+                NSDictionary *appProperties = @{@"displayHeight" : @(adData.standardDisplaySize.height),
+                                                @"displayWidth" : @(adData.standardDisplaySize.width)};
+                templateView = [[StandardDisplayAdTemplate alloc] initWithBridge:self.bridge
+                                                                      moduleName:self.stdDisplayAdTemplate
+                                                               initialProperties:appProperties];
+            }
+            else {
+                return;
+            }
+            
+            // Inject template
+            //templateView.delegate = self;
+            templateView.frame = self.bounds;
+            [self addSubview:templateView];
+            
+            
+        } else {
+            // No fill
+            templateView = self;
+        }
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             UIScrollView *container = [NativoAdsUtils getParentScrollViewForView:self];
-            if (container && templateView) {
+            if (container) {
                 // Place ad in view
                 [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
+            } else {
+                NSLog(@"NativoSDK: Error - Could not find container for NativoAd");
+            }
+            if (!adData.isAdContentAvailable) {
+                self.onNeedsRemoveAd(@{ @"index": self.locationId, @"sectionUrl": self.sectionUrl });
             }
         });
     });
