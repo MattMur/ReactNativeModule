@@ -9,6 +9,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
 #import <React/RCTDevLoadingView.h>
+#import <React/RCTUIManager.h>
 
 //@class FakeLandingPage;
 
@@ -131,7 +132,9 @@ RCT_EXPORT_VIEW_PROPERTY(onNeedsRemoveAd, RCTBubblingEventBlock)
             }
             
             // Inject template
-            //templateView.delegate = self;
+            RCTRootView *rootTemplate = (RCTRootView *)templateView;
+            rootTemplate.delegate = self;
+            rootTemplate.sizeFlexibility = RCTRootViewSizeFlexibilityHeight;
             templateView.frame = self.bounds;
             [self addSubview:templateView];
             
@@ -159,7 +162,11 @@ RCT_EXPORT_VIEW_PROPERTY(onNeedsRemoveAd, RCTBubblingEventBlock)
 #pragma mark - RCTRootViewDelegate
 
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView {
-    NSLog(@"Did rootViewDidChangeIntrinsicSize: %@", rootView);
+    // Required to force size update on JS side
+    CGRect newFrame = rootView.frame;
+    newFrame.size = rootView.intrinsicContentSize;
+    rootView.frame = newFrame;
+    [self.bridge.uiManager setSize:rootView.intrinsicContentSize forView:self];
 }
 
 @end
