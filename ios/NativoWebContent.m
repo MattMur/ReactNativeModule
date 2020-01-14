@@ -7,7 +7,7 @@
 
 RCT_EXPORT_MODULE(NativoWebContent)
 RCT_EXPORT_VIEW_PROPERTY(sectionUrl, NSString)
-RCT_EXPORT_VIEW_PROPERTY(locationId, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(index, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(shouldScroll, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onFinishLoading, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onClickExternalLink, RCTBubblingEventBlock)
@@ -36,13 +36,13 @@ RCT_EXPORT_VIEW_PROPERTY(onClickExternalLink, RCTBubblingEventBlock)
     }
     
     // This part used only for landing pages
-    if (self.sectionUrl && self.locationId) {
+    if (self.sectionUrl && self.index) {
         self.templateProxy = [[NativoLandingPageTemplate alloc] init];
         self.templateProxy.webView = self.nativoWebView;
         self.templateProxy.shouldScroll = self.shouldScroll;
         self.templateProxy.onClickExternalLink = self.onClickExternalLink;
         self.templateProxy.onFinishLoading = self.onFinishLoading;
-        [NativoSDK injectSponsoredLandingPageViewController:self.templateProxy forSection:self.sectionUrl withAdAtLocationIdentifier:self.locationId];
+        [NativoSDK injectSponsoredLandingPageViewController:self.templateProxy forSection:self.sectionUrl withAdAtLocationIdentifier:self.index];
     }
 }
 
