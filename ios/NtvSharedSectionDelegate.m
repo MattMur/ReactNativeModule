@@ -65,6 +65,7 @@
 
 - (void)section:(NSString *)sectionUrl needsReloadDatasourceAtLocationIdentifier:(id)identifier forReason:(NSString *)reason {
     NSLog(@"%@ %@", sectionUrl, reason);
+    // TODO: call needsRemoveAd()
 }
 
 - (void)section:(NSString *)sectionUrl needsDisplayLandingPage:(nullable UIViewController<NtvLandingPageInterface> *)sponsoredLandingPageViewController {
@@ -79,7 +80,7 @@
                                 @"authorName" : adData.authorName,
                                 @"authorImgUrl" : adData.authorImageURL,
                                 @"date" : adData.date,
-                                @"locationId" : adData.locationIdentifier,
+                                @"index" : adData.locationIdentifier,
                                 @"sectionUrl" : sectionUrl
         });
     }

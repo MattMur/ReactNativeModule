@@ -8,21 +8,21 @@ function NativoAdComponent(props) {
 
     _onNativeAdClick = (event) => {
         if (!props.onNativeAdClick) {
-            console.log("Nativo ad at index "+ props.locationId +" was clicked but 'onNativeAdClick' not implemented");
+            console.log("Nativo ad at index "+ props.index +" was clicked but 'onNativeAdClick' not implemented");
             return;
         }
         props.onNativeAdClick(event.nativeEvent);
     }
     _onDisplayAdClick = (event) => {
         if (!props.onDisplayAdClick) {
-            console.log("Nativo ad at index "+ props.locationId +" was clicked but 'onDisplayAdClick' not implemented");
+            console.log("Nativo ad at index "+ props.index +" was clicked but 'onDisplayAdClick' not implemented");
             return;
         }
         props.onDisplayAdClick(event.nativeEvent);
     }
     _onNeedsRemoveAd = (event) => {
         if (!props.onNeedsRemoveAd) {
-            console.log("Nativo ad at index "+ props.locationId +" should be removed but 'onNeedsRemoveAd' not implemented");
+            console.log("Nativo ad at index "+ props.index +" should be removed but 'onNeedsRemoveAd' not implemented");
             return;
         }
         props.onNeedsRemoveAd(event.nativeEvent);
@@ -57,7 +57,7 @@ function getFirstKey(obj) {
 
 NativoAdComponent.propTypes = {
     sectionUrl: PropTypes.string,
-    locationId: PropTypes.number,
+    index: PropTypes.number,
     nativeAdTemplate: PropTypes.object,
     videoAdTemplate: PropTypes.object,
     standardDisplayAdTemplate: PropTypes.object,
@@ -70,7 +70,7 @@ const NativoAd = requireNativeComponent('NativoAd', NativoAdComponent);
 
 function NativoWebComponent(props) {
     const [sectionUrl, setSectionUrl] = React.useState();
-    const [locationId, setLocationId] = React.useState("0");
+    const [index, setIndex] = React.useState();
     const [shouldScroll, setShouldScroll] = React.useState(false);
 
     _onClickExternalLink = (event) => {
@@ -90,7 +90,7 @@ function NativoWebComponent(props) {
 
 NativoWebComponent.propTypes = {
     sectionUrl: PropTypes.string,
-    locationId: PropTypes.number,
+    index: PropTypes.number,
     shouldScroll: PropTypes.bool,
     onFinishLoading: PropTypes.func,
     onClickExternalLink: PropTypes.func

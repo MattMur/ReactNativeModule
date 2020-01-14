@@ -19,7 +19,7 @@
 
 RCT_EXPORT_MODULE(NativoAd)
 RCT_EXPORT_VIEW_PROPERTY(sectionUrl, NSString)
-RCT_EXPORT_VIEW_PROPERTY(locationId, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(index, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(nativeAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(videoAdTemplate, NSString)
 RCT_EXPORT_VIEW_PROPERTY(stdDisplayAdTemplate, NSString)
@@ -63,7 +63,7 @@ RCT_EXPORT_VIEW_PROPERTY(onNeedsRemoveAd, RCTBubblingEventBlock)
 @interface NativoAd () <RCTRootViewDelegate>
 @property (nonatomic) NtvAdData *adData;
 @property (nonatomic) NSString *sectionUrl;
-@property (nonatomic) NSNumber *locationId;
+@property (nonatomic) NSNumber *index;
 @property (nonatomic) NSString *nativeAdTemplate;
 @property (nonatomic) NSString *videoAdTemplate;
 @property (nonatomic) NSString *stdDisplayAdTemplate;
@@ -77,16 +77,16 @@ RCT_EXPORT_VIEW_PROPERTY(onNeedsRemoveAd, RCTBubblingEventBlock)
 }
 
 - (void)didMoveToSuperview {
-    if (self.sectionUrl && self.locationId) {
+    if (self.sectionUrl && self.index) {
         // Set ad view with shared section delegate
-        [NtvSharedSectionDelegate setAdView:self forSectionUrl:self.sectionUrl atLocationIdentifier:self.locationId];
+        [NtvSharedSectionDelegate setAdView:self forSectionUrl:self.sectionUrl atLocationIdentifier:self.index];
         
         // If we have ad data, inject ad view, otherwise prefetch ad
-        NtvAdData *adData = [NativoSDK getCachedAdAtLocationIdentifier:self.locationId forSection:self.sectionUrl];
+        NtvAdData *adData = [NativoSDK getCachedAdAtLocationIdentifier:self.index forSection:self.sectionUrl];
         if (adData) {
             [self injectWithAdData:adData];
         } else {
-            [NativoSDK prefetchAdForSection:self.sectionUrl atLocationIdentifier:self.locationId options:nil];
+            [NativoSDK prefetchAdForSection:self.sectionUrl atLocationIdentifier:self.index options:nil];
         }
     }
 }
@@ -145,12 +145,12 @@ RCT_EXPORT_VIEW_PROPERTY(onNeedsRemoveAd, RCTBubblingEventBlock)
             UIScrollView *container = [NativoAdsUtils getParentScrollViewForView:self];
             if (container) {
                 // Place ad in view
-                [NativoSDK placeAdInView:templateView atLocationIdentifier:self.locationId inContainer:container forSection:self.sectionUrl options:nil];
+                [NativoSDK placeAdInView:templateView atLocationIdentifier:self.index inContainer:container forSection:self.sectionUrl options:nil];
             } else {
                 NSLog(@"NativoSDK: Error - Could not find container for NativoAd");
             }
             if (!adData.isAdContentAvailable) {
-                self.onNeedsRemoveAd(@{ @"index": self.locationId, @"sectionUrl": self.sectionUrl });
+                self.onNeedsRemoveAd(@{ @"index": self.index, @"sectionUrl": self.sectionUrl });
             }
         });
     });
