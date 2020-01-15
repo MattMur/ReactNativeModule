@@ -26,14 +26,6 @@
     return self.shouldScroll;
 }
 
-- (void)setContentWebViewHeight:(CGFloat)contentHeight {
-    if (!self.shouldScroll) {
-        if (self.onFinishLoading) {
-            self.onFinishLoading(@{ @"contentHeight" : @(contentHeight) } );
-        }
-    }
-}
-
 - (void)handleExternalLink:(nonnull NSURL *)link {
     if (self.onClickExternalLink) {
         self.onClickExternalLink(@{ @"url" : link.absoluteString });
@@ -41,10 +33,9 @@
 }
 
 - (void)contentWebViewDidFinishLoad {
-    if (self.shouldScroll) {
-        if (self.onFinishLoading) {
-            self.onFinishLoading(@{ @"contentHeight" : @(self.webView.frame.size.height) });
-        }
+    if (self.onFinishLoading) {
+        float contentHeight = [self.webView.subviews[0] contentSize].height + 2.0f;
+        self.onFinishLoading(@{ @"contentHeight" : @(contentHeight) });
     }
 }
 
